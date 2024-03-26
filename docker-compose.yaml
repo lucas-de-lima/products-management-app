@@ -1,0 +1,87 @@
+version: '3.9'
+services:
+  db:
+    image: mysql:8.3.0
+    container_name: product_db
+    platform: linux/x86_64
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=product_db
+      - MYSQL_ROOT_PASSWORD=product_db_management
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: 'always'
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 5
+    cap_add:
+      - SYS_NICE
+    networks:
+      - network
+  backend:
+    container_name: app_backend
+    build:
+      context: ./app/backend
+      dockerfile: Dockerfile
+      args:
+        APP_PORT: ${APP_PORT}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        DB_HOST: ${DB_HOST}
+        DB_PORT: ${DB_PORT}
+    ports:
+      - "3001:3001"
+    platform: linux/x86_64
+    working_dir: /app-backend
+    volumes:
+      - ./backend/src:/app-backend/src
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - APP_PORT=3001
+      - DB_USER=spring_user
+      - DB_PASS=product_db_management
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_URL=jdbc:mysql://db:3306/product_db
+    healthcheck:
+      test: ["CMD", "lsof", "-t", "-i:3001"]
+      timeout: 10s
+      retries: 5
+    networks:
+      - network
+  frontend:
+    container_name: app_frontend
+    build:
+      context: ./app/frontend
+      target: dev
+    restart: 'always'
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    volumes:
+      - .:/frontend
+      - /frontend/node_modules
+      - /frontend/.next
+    ports:
+      - "3000:3000"
+    platform: linux/x86_64
+    working_dir: /app-frontend
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "lsof", "-t", "-i:3000" ]
+      timeout: 10s
+      retries: 5
+    networks:
+      - network
+networks:
+  network:
+    driver: bridge
+volumes:
+  db_data:
