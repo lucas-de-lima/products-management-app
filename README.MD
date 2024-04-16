@@ -66,7 +66,3 @@ O corpo da requisição deve conter os seguintes dados no formato JSON:
         "price": 99.99,
         "available": true
     }
-
-*TODO:* Essas partes eu não consegui resolver em menos de 24 horas, acredito qeu com mais tempo eu poderia resolver, mas fiquei com medo de perder o tempo do processo de inscrição para o estágio, desculpe!
-- Corrigir tipos na linha 38 e 39 em ProductForm no frontend
-- Os é necessário clicar mais de uma vez no botão "Cadastrar" para ser redirecionado, o que causa duplicação do item que foi cadastrado.
