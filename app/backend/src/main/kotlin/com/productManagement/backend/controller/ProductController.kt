@@ -3,6 +3,7 @@ package com.productManagement.backend.controller
 import com.productManagement.backend.dto.ProductReadDto
 import com.productManagement.backend.dto.ProductWriteDto
 import com.productManagement.backend.service.ProductServiceImp
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 class ProductController(private var productService: ProductServiceImp) {
 
     @PostMapping
-    fun createProduct(@RequestBody productDto: ProductWriteDto): ResponseEntity<ProductReadDto> {
+    fun createProduct(@Valid @RequestBody productDto: ProductWriteDto): ResponseEntity<ProductReadDto> {
         val newProduct = productService.createProduct(productDto)
         return ResponseEntity(newProduct, HttpStatus.CREATED)
     }

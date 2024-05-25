@@ -1,5 +1,6 @@
 'use client'
 
+import HttpClient from '@/app/api/HttpClient';
 import { postProduct } from '@/app/api/fetchApi';
 import { ProductForm, ProductFormConverted } from '@/app/interfaces/productInterface';
 import { ProductSchema, productSchema } from '@/lib/zodSchema';
@@ -9,7 +10,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 
-const ProductForm: React.FC = () => {
+const ProductFormComponent: React.FC = () => {
   const { register, handleSubmit, getValues, formState: { errors } } = useForm<ProductSchema>({
     resolver: zodResolver(productSchema),
   });
@@ -33,10 +34,11 @@ const ProductForm: React.FC = () => {
   
   const onSubmit = async () => {
     const formData = getValues()
+    const httpClient = new HttpClient('http://localhost:3001')
     try {
       if (formData) {
         const data = convertFormData(formData);
-        await postProduct(data);
+        await httpClient.post('/api/products', data);
         console.info('POST request successful');
         setIsActionCompleted(true);
       }
@@ -144,4 +146,4 @@ const ProductForm: React.FC = () => {
   );
 };
 
-export default ProductForm;
+export default ProductFormComponent;
