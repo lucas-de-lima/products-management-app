@@ -28,6 +28,9 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j")
 
+	// https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator
+	implementation("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

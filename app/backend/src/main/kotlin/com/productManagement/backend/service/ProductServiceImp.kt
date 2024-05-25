@@ -9,7 +9,7 @@ import com.productManagement.backend.utils.ProductDtoConverter
 import org.springframework.stereotype.Service
 
 @Service
-class ProductServiceImp (
+class ProductServiceImp(
     private val productRepository: ProductRepository
 ) : ProductService {
     override fun createProduct(productDto: ProductWriteDto): ProductReadDto {
@@ -23,17 +23,9 @@ class ProductServiceImp (
     }
 
     override fun getProducts(): List<ProductReadDto> {
-        return try {
-            val products = productRepository.findAll()
-            if (products.isEmpty()) {
-                throw EmptyProductListException("A lista de produtos está vazia!")
-            }
-            products.map(ProductDtoConverter::fromProduct)
-        } catch (e: EmptyProductListException) {
-            emptyList()
-        } catch (e: Exception) {
-            throw ProductNotFoundException("${e.message}")
-        }
+        val products = productRepository.findAll()
+        if (products.isEmpty()) throw EmptyProductListException("A lista de produtos está vazia!")
+        return products.map(ProductDtoConverter::fromProduct)
     }
 
     override fun getProductById(id: Long): ProductReadDto {
@@ -44,7 +36,7 @@ class ProductServiceImp (
 
     override fun updateProduct(id: Long, productDto: ProductWriteDto): ProductReadDto {
         val existingProduct = productRepository.findById(id)
-            .orElseThrow { ProductUpdateException("Produto não encontrado com o id: $id")  }
+            .orElseThrow { ProductUpdateException("Produto não encontrado com o id: $id") }
 
         existingProduct.apply {
             name = productDto.name
@@ -59,7 +51,7 @@ class ProductServiceImp (
 
     override fun deleteProduct(id: Long) {
         val product = productRepository.findById(id)
-            .orElseThrow { ProductDeletionException("Produto não encontrado com o id: $id")  }
+            .orElseThrow { ProductDeletionException("Produto não encontrado com o id: $id") }
         productRepository.delete(product)
     }
 }
